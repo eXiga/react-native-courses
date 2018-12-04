@@ -3,7 +3,7 @@ import { Image, Text, TextInput, TouchableOpacity, View } from "react-native"
 import styles from './Login.style'
 
 export interface Props {
-  onLoginPressed?: () => void
+  onLoginPressed: () => void
 }
 
 interface State {
@@ -12,7 +12,7 @@ interface State {
 }
 
 export class Login extends React.Component<Props, State> {
-  constructor(props: {}) {
+  constructor(props: Props) {
     super(props)
 
     this.state = {

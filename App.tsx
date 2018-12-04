@@ -1,10 +1,12 @@
-import React from 'react';
-import { Component } from 'react';
+import React from 'react'
+import { Component } from 'react'
+import { Alert } from 'react-native'
 import { Login } from "./src/components/login/Login"
 import { Products } from "./src/components/products/Products"
 
 interface State {
-  isLoggedIn: boolean
+  isLoggedIn: boolean,
+  isProductSelected: boolean
 }
 
 export default class App extends Component<{}, State> {
@@ -12,12 +14,13 @@ export default class App extends Component<{}, State> {
     super(props)
 
     this.state = {
-      isLoggedIn: false
+      isLoggedIn: false,
+      isProductSelected: false
     }
   }
 
   render() {
-    if (this.state.isLoggedIn) {
+    if (!this.state.isLoggedIn) {
       return this.productsScreen()
     } else {
       return this.loginScreen()
@@ -29,6 +32,6 @@ export default class App extends Component<{}, State> {
   }
 
   productsScreen() {
-    return <Products />
+    return <Products onProductSelected = { (item) =>  Alert.alert(item.name) }/>
   }
 }
