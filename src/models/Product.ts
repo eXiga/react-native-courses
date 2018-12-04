@@ -1,10 +1,4 @@
-// export default interface Product {
-//   name: string,
-//   description: string,
-//   imagePath: any
-// }
-
-export default class Product {
+class Product {
   name: string
   description: string
   imagePath: any
@@ -15,3 +9,5 @@ export default class Product {
     this.imagePath = imagePath
   }
 }
+
+export { Product }
