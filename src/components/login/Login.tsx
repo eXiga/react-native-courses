@@ -1,18 +1,20 @@
 import React from "react"
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
 import styles from './Login.style'
-
-export interface Props {
-  onLoginPressed: () => void
-}
 
 interface State {
   email: string,
   password: string
 }
 
-export class Login extends React.Component<Props, State> {
-  constructor(props: Props) {
+export class Login extends React.Component<NavigationScreenProps, State> {
+  static navigationOptions: NavigationScreenOptions = {
+    title: 'Login',
+    headerBackTitle: null
+  }
+
+  constructor(props: NavigationScreenProps) {
     super(props)
 
     this.state = {
@@ -45,7 +47,7 @@ export class Login extends React.Component<Props, State> {
         </View>
         <TouchableOpacity
             style= { styles.button }
-            onPress = { this.props.onLoginPressed }
+            onPress = { () => this.props.navigation.navigate('Products') }
             activeOpacity = { .5 }>
                 <Text style = { styles.buttonTitle  }>Login</Text> 
         </TouchableOpacity>

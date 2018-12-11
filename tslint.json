@@ -12,6 +12,7 @@
       "no-console": [true, ["error", ["warn", "error"]]],
       "object-literal-sort-keys": false,
       "ordered-imports": true,
-      "switch-default": false
+      "switch-default": false,
+      "object-literal-shorthand": false
     }
 }
