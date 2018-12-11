@@ -31,7 +31,8 @@ export default StyleSheet.create({
     borderRadius: 5,
     textAlign: 'center',
     fontFamily: 'vincHand',
-    fontSize: 30
+    fontSize: 30,
+    padding: 0
   },
   button: {
     marginTop: 40,
