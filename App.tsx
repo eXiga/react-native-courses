@@ -17,7 +17,8 @@ const rootStack = createStackNavigator({
     },
     headerTitleStyle: {
       fontFamily: 'vincHand',
-      fontSize: 30
+      fontSize: 30,
+      fontWeight: '200'
     }
   }
 })
