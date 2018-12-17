@@ -1,17 +1,17 @@
-import React from 'react'
-import { FlatList, Text, TouchableHighlight, View } from 'react-native'
+import React from 'react';
+import { FlatList, Text, TouchableHighlight, View } from 'react-native';
 import { NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
-import { Product } from '../../models/Product'
-import { ProductRow } from './ProductRow'
-import styles from './Products.style'
+import { Product } from '../../models/Product';
+import { ProductRow } from './ProductRow';
+import styles from './Products.style';
 
-const text = '  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eufugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia  deserunt mollit anim id est laborum.'
+const text = '  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eufugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia  deserunt mollit anim id est laborum.';
 
 export class Products extends React.Component<NavigationScreenProps, {}> {
   static navigationOptions: NavigationScreenOptions = {
     title: 'Products',
     headerLeft: null
-  }
+  };
 
   products: Product[] = [
     new Product('Product 1', text, require('../../assets/img/audio.png')),
@@ -22,7 +22,7 @@ export class Products extends React.Component<NavigationScreenProps, {}> {
     new Product('Product 6', text, require('../../assets/img/calendar.png')),
     new Product('Product 7', text, require('../../assets/img/camera.png')),
     new Product('Product 8', text, require('../../assets/img/cell_phone.png'))
-  ]
+  ];
 
   render() {
     return (
@@ -40,6 +40,6 @@ export class Products extends React.Component<NavigationScreenProps, {}> {
           ItemSeparatorComponent = { () => <View style = { styles.rowSeparator } /> }
         />
       </View>
-    )
+    );
   }
 }

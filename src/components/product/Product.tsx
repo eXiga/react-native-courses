@@ -1,27 +1,27 @@
-import React from 'react'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
+import React from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
-import { Product as ProductModel } from '../../models/Product'
-import styles from './Product.style'
+import { Product as ProductModel } from '../../models/Product';
+import styles from './Product.style';
 
 export interface Props {
-  product: ProductModel
-  onBackButtonPressed: () => void
+  product: ProductModel;
+  onBackButtonPressed: () => void;
 }
 
 interface Params {
-  item: ProductModel
+  item: ProductModel;
 }
 
 export class Product extends React.Component<NavigationScreenProps<Params>, {}> { 
   static navigationOptions = ({navigation}: NavigationScreenProps<Params>) => {
     return {
       title: navigation.state.params ? navigation.state.params.item.name : 'Details'
-    }
+    };
   }
   
   render() {
-    const params: Params | undefined = this.props.navigation.state.params
+    const params: Params | undefined = this.props.navigation.state.params;
 
     return (
       <View style = { styles.root }>
@@ -42,6 +42,6 @@ export class Product extends React.Component<NavigationScreenProps<Params>, {}> 
         </View>
         <View style = { styles.separator } />
       </View>
-    )
+    );
   }
 }

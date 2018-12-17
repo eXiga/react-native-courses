@@ -1,7 +1,7 @@
-import { createNavigationContainer, createStackNavigator } from 'react-navigation'
-import { Login } from './src/components/login/Login'
-import { Product } from './src/components/product/Product'
-import { Products } from './src/components/products/Products'
+import { createNavigationContainer, createStackNavigator } from 'react-navigation';
+import { Login } from './src/components/login/Login';
+import { Product } from './src/components/product/Product';
+import { Products } from './src/components/products/Products';
 
 // For some reasons, TS can't import part or react-navigation properly. VSCode shows this file
 // as broken and says that there is no defaultNavigationOptions property. Anyway, it works.
@@ -21,6 +21,6 @@ const rootStack = createStackNavigator({
       fontWeight: '200'
     }
   }
-})
+});
 
-export default createNavigationContainer(rootStack)
+export default createNavigationContainer(rootStack);

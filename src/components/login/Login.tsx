@@ -1,28 +1,28 @@
-import React from "react"
-import { ActivityIndicator, Alert, Image, Text, TextInput, TouchableOpacity, View } from "react-native"
+import React from "react";
+import { ActivityIndicator, Alert, Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
-import styles from './Login.style'
+import styles from './Login.style';
 
 interface State {
-  email: string,
-  password: string,
-  isLoading: boolean
+  email: string;
+  password: string;
+  isLoading: boolean;
 }
 
 export class Login extends React.Component<NavigationScreenProps, State> {
   static navigationOptions: NavigationScreenOptions = {
     title: 'Login',
     headerBackTitle: null
-  }
+  };
 
   constructor(props: NavigationScreenProps) {
-    super(props)
+    super(props);
 
     this.state = {
       email: "",
       password: "",
       isLoading: false
-    }
+    };
   }
 
   render() {
@@ -31,7 +31,7 @@ export class Login extends React.Component<NavigationScreenProps, State> {
         <View style = { styles.root }>
           <ActivityIndicator/>
         </View>
-      )
+      );
     }
 
     return (
@@ -63,21 +63,21 @@ export class Login extends React.Component<NavigationScreenProps, State> {
                 <Text style = { styles.buttonTitle  }>Login</Text> 
         </TouchableOpacity>
       </View>
-    )
+    );
   }
 
   private login() {
     if (this.state.email === "") {
-      Alert.alert('Email is empty', 'You have to provide email!', [{text: 'OK'}])
-      return
+      Alert.alert('Email is empty', 'You have to provide email!', [{text: 'OK'}]);
+      return;
     }
 
     if (this.state.password === "") {
-      Alert.alert('Password is empty', 'You have to provide password!', [{text: 'OK'}])
-      return
+      Alert.alert('Password is empty', 'You have to provide password!', [{text: 'OK'}]);
+      return;
     }
 
-    this.setState({ isLoading: true })
+    this.setState({ isLoading: true });
     return fetch('http://ecsc00a02fb3.epam.com/index.php/rest/V1/integration/customer/token', {
       method: 'POST',
       headers: {
@@ -89,14 +89,14 @@ export class Login extends React.Component<NavigationScreenProps, State> {
       })
     })
     .then(response => {
-      this.setState({ isLoading: false })
+      this.setState({ isLoading: false });
       if (response.status === 200) {
-        this.props.navigation.navigate('Products')
+        this.props.navigation.navigate('Products');
       } else {
-        Alert.alert('Error', 'Please, check the data you provided', [{text: 'OK'}])
+        Alert.alert('Error', 'Please, check the data you provided', [{text: 'OK'}]);
       }
     })
-    .catch(_ => Alert.alert('Error', 'Please, try again :(', [{text: 'OK'}]))
+    .catch(_ => Alert.alert('Error', 'Please, try again :(', [{text: 'OK'}]));
   }
 }
 
