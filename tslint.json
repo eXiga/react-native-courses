@@ -6,7 +6,6 @@
     ],
     "rules": {
       "arrow-parens": false,
-      "interface-name": [true, "never-prefix"],
       "max-classes-per-file": false,
       "member-access": [false, "check-accessor", "check-constructor"],
       "no-console": [true, ["error", ["warn", "error"]]],

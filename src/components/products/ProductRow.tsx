@@ -2,13 +2,13 @@ import React from 'react';
 import { Image, Text, View } from 'react-native';
 import styles from './ProductRow.style';
 
-export interface RowProps {
+export interface IProductRowProps {
   productName: string;
   imagePath: any;
 }
 
-export class ProductRow extends React.Component<RowProps, {}> {
-  constructor(props: RowProps) {
+export class ProductRow extends React.Component<IProductRowProps, {}> {
+  constructor(props: IProductRowProps) {
     super(props);
   }
 

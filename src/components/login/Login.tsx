@@ -1,23 +1,27 @@
 import React from "react";
 import { ActivityIndicator, Alert, Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
+import { ILoginService, LoginService } from '../../services/LoginService';
 import styles from './Login.style';
 
-interface State {
+interface ILoginState {
   email: string;
   password: string;
   isLoading: boolean;
 }
 
-export class Login extends React.Component<NavigationScreenProps, State> {
+export class Login extends React.Component<NavigationScreenProps, ILoginState> {
   static navigationOptions: NavigationScreenOptions = {
     title: 'Login',
     headerBackTitle: null
   };
 
+  private loginService: ILoginService;
+
   constructor(props: NavigationScreenProps) {
     super(props);
 
+    this.loginService = new LoginService();
     this.state = {
       email: "",
       password: "",
@@ -78,25 +82,15 @@ export class Login extends React.Component<NavigationScreenProps, State> {
     }
 
     this.setState({ isLoading: true });
-    return fetch('http://ecsc00a02fb3.epam.com/index.php/rest/V1/integration/customer/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username: this.state.email,
-        password: this.state.password
-      })
-    })
-    .then(response => {
-      this.setState({ isLoading: false });
-      if (response.status === 200) {
-        this.props.navigation.navigate('Products');
-      } else {
-        Alert.alert('Error', 'Please, check the data you provided', [{text: 'OK'}]);
-      }
-    })
-    .catch(_ => Alert.alert('Error', 'Please, try again :(', [{text: 'OK'}]));
+    this.loginService
+      .login(this.state.email, this.state.password)
+      .then( response => {
+        this.setState({ isLoading: false });
+        if (response.ok) {
+          this.props.navigation.navigate('Products');
+        } else {
+          Alert.alert('Error', 'Please, check the data you provided', [{text: 'OK'}]);
+        }
+      }).catch(_ => Alert.alert('Error', 'Please, try again :(', [{text: 'OK'}]));
   }
 }
-

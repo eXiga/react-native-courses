@@ -4,24 +4,24 @@ import { NavigationScreenProps } from 'react-navigation';
 import { Product as ProductModel } from '../../models/Product';
 import styles from './Product.style';
 
-export interface Props {
+export interface IProductProps {
   product: ProductModel;
   onBackButtonPressed: () => void;
 }
 
-interface Params {
+interface IProductParams {
   item: ProductModel;
 }
 
-export class Product extends React.Component<NavigationScreenProps<Params>, {}> { 
-  static navigationOptions = ({navigation}: NavigationScreenProps<Params>) => {
+export class Product extends React.Component<NavigationScreenProps<IProductParams>, {}> { 
+  static navigationOptions = ({navigation}: NavigationScreenProps<IProductParams>) => {
     return {
       title: navigation.state.params ? navigation.state.params.item.name : 'Details'
     };
   }
   
   render() {
-    const params: Params | undefined = this.props.navigation.state.params;
+    const params: IProductParams | undefined = this.props.navigation.state.params;
 
     return (
       <View style = { styles.root }>
