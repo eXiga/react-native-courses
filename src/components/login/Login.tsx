@@ -2,12 +2,17 @@ import React from "react";
 import { ActivityIndicator, Alert, Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
 import { ILoginService, LoginService } from '../../services/LoginService';
+import { Error } from '../error/Error';
 import styles from './Login.style';
 
 interface ILoginState {
   email: string;
   password: string;
   isLoading: boolean;
+  shouldShowError: boolean;
+  errorTitle: string;
+  errorDescription: string;
+  isErrorRetriable: boolean;
 }
 
 export class Login extends React.Component<NavigationScreenProps, ILoginState> {
@@ -23,9 +28,13 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
 
     this.loginService = new LoginService();
     this.state = {
-      email: "",
-      password: "",
-      isLoading: false
+      email: '',
+      password: '',
+      isLoading: false,
+      shouldShowError: false,
+      errorTitle: '',
+      errorDescription: '',
+      isErrorRetriable: false
     };
   }
 
@@ -40,6 +49,17 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
 
     return (
       <View style = { styles.root }>
+        <Error
+          retriable = { this.state.isErrorRetriable }
+          title = { this.state.errorTitle }
+          description = { this.state.errorDescription }
+          onCloseButtonPress = { () => this.setState({ shouldShowError: false }) }
+          onTryAgainButtonPress = { () => {
+            this.setState({ shouldShowError: false });
+            this.login();
+          }}
+          visible = { this.state.shouldShowError }>
+        </Error>      
         <Image 
           style = { styles.image }
           source = { require('../../assets/img/logo.png') }
@@ -72,12 +92,22 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
 
   private login() {
     if (this.state.email === "") {
-      Alert.alert('Email is empty', 'You have to provide email!', [{text: 'OK'}]);
+      this.setState({
+        shouldShowError: true, 
+        errorTitle: 'Email is empty!', 
+        errorDescription: 'You have to provide email!',
+        isErrorRetriable: false
+      });
       return;
     }
 
     if (this.state.password === "") {
-      Alert.alert('Password is empty', 'You have to provide password!', [{text: 'OK'}]);
+      this.setState({ 
+        shouldShowError: true, 
+        errorTitle: 'Password is empty!', 
+        errorDescription: 'You have to provide password!',
+        isErrorRetriable: false
+      });
       return;
     }
 
@@ -89,8 +119,19 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
         if (response.ok) {
           this.props.navigation.navigate('Products');
         } else {
-          Alert.alert('Error', 'Please, check the data you provided', [{text: 'OK'}]);
+          this.setState({
+            shouldShowError: true,
+            errorTitle: 'Error',
+            errorDescription: 'Please, check the data you provided',
+            isErrorRetriable: true
+          });
         }
-      }).catch(_ => Alert.alert('Error', 'Please, try again :(', [{text: 'OK'}]));
+      }).catch(_ => this.setState({
+        isLoading: false,
+        shouldShowError: true,
+        errorTitle: 'Error',
+        errorDescription: 'Please, try again later :(',
+        isErrorRetriable: true
+      }));
   }
 }
