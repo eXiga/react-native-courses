@@ -7,7 +7,12 @@ import styles from './Products.style';
 
 const text = '  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eufugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia  deserunt mollit anim id est laborum.';
 
-export class Products extends React.Component<NavigationScreenProps, {}> {
+interface IProductsState {
+  isRefreshing: boolean;
+  products: Product[];
+}
+
+export class Products extends React.Component<NavigationScreenProps, IProductsState> {
   static navigationOptions: NavigationScreenOptions = {
     title: 'Products',
     headerLeft: null
@@ -30,12 +35,19 @@ export class Products extends React.Component<NavigationScreenProps, {}> {
   constructor(props: NavigationScreenProps) {
     super(props);
 
+    this.state = {
+      isRefreshing: false,
+      products: []
+    };
+
     this.didFocusSubscription = props.navigation.addListener('didFocus', _ => {
       BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
     });
   }
 
   componentDidMount() {
+    this.fetchProducts();
+
     this.willBlurSubscription = this.props.navigation.addListener('willBlur', _ => {
       BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
     });
@@ -57,7 +69,9 @@ export class Products extends React.Component<NavigationScreenProps, {}> {
         <Text style= { styles.title }>Products</Text>
         <View style = { styles.rowSeparator } />
         <FlatList
-          data = { this.products }
+          refreshing = { this.state.isRefreshing }
+          onRefresh = { () => this.onRefresh() }
+          data = { this.state.products }
           renderItem = { ({item}) =>
             <TouchableHighlight onPress = { () => this.props.navigation.navigate('Product', { item: item }) } underlayColor = 'whitesmoke' >
               <ProductRow productName = { item.name } imagePath = { item.imagePath } /> 
@@ -68,6 +82,15 @@ export class Products extends React.Component<NavigationScreenProps, {}> {
         />
       </View>
     );
+  }
+
+  private onRefresh() {
+    this.setState({ isRefreshing: true });
+    this.fetchProducts();
+  }
+
+  private fetchProducts() {
+    this.setState({ isRefreshing: false, products: this.products });
   }
 
   private onBackButtonPressAndroid(): boolean {
