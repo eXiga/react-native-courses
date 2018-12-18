@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityIndicator, Alert, Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
 import { ILoginService, LoginService } from '../../services/LoginService';
 import { Error } from '../error/Error';
