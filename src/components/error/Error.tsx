@@ -20,6 +20,7 @@ export class Error extends React.Component<IErrorProps, {}> {
   render() {
     return(     
       <Modal
+        onRequestClose = { () => this.props.onCloseButtonPress() }
         animationType = "slide" 
         transparent = { true }
         visible = { this.props.visible }>
