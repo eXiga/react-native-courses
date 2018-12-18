@@ -1,6 +1,6 @@
 import React from 'react';
-import { FlatList, Text, TouchableHighlight, View } from 'react-native';
-import { NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
+import { BackHandler, FlatList, Text, TouchableHighlight, View } from 'react-native';
+import { NavigationEventSubscription, NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
 import { Product } from '../../models/Product';
 import { ProductRow } from './ProductRow';
 import styles from './Products.style';
@@ -24,6 +24,33 @@ export class Products extends React.Component<NavigationScreenProps, {}> {
     new Product('Product 8', text, require('../../assets/img/cell_phone.png'))
   ];
 
+  private didFocusSubscription?: NavigationEventSubscription;
+  private willBlurSubscription?: NavigationEventSubscription;
+
+  constructor(props: NavigationScreenProps) {
+    super(props);
+
+    this.didFocusSubscription = props.navigation.addListener('didFocus', _ => {
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
+    });
+  }
+
+  componentDidMount() {
+    this.willBlurSubscription = this.props.navigation.addListener('willBlur', _ => {
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.didFocusSubscription) {
+      this.didFocusSubscription.remove();
+    }
+
+    if (this.willBlurSubscription) {
+      this.willBlurSubscription.remove();
+    }
+  }
+
   render() {
     return (
       <View style = { styles.root }>
@@ -41,5 +68,10 @@ export class Products extends React.Component<NavigationScreenProps, {}> {
         />
       </View>
     );
+  }
+
+  private onBackButtonPressAndroid(): boolean {
+    BackHandler.exitApp();
+    return true;
   }
 }

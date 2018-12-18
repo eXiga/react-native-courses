@@ -4,11 +4,6 @@ import { NavigationScreenProps } from 'react-navigation';
 import { Product as ProductModel } from '../../models/Product';
 import styles from './Product.style';
 
-export interface IProductProps {
-  product: ProductModel;
-  onBackButtonPressed: () => void;
-}
-
 interface IProductParams {
   item: ProductModel;
 }
