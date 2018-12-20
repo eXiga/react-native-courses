@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   root: {
@@ -31,7 +31,8 @@ export default StyleSheet.create({
     borderRadius: 5,
     textAlign: 'center',
     fontFamily: 'vincHand',
-    fontSize: 30
+    fontSize: 30,
+    padding: 0
   },
   button: {
     marginTop: 40,
@@ -46,4 +47,4 @@ export default StyleSheet.create({
     fontFamily: 'vincHand',
     fontSize: 30
   }
-})
+});

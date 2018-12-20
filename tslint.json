@@ -6,12 +6,13 @@
     ],
     "rules": {
       "arrow-parens": false,
-      "interface-name": [true, "never-prefix"],
       "max-classes-per-file": false,
       "member-access": [false, "check-accessor", "check-constructor"],
       "no-console": [true, ["error", ["warn", "error"]]],
       "object-literal-sort-keys": false,
       "ordered-imports": true,
-      "switch-default": false
+      "switch-default": false,
+      "object-literal-shorthand": false,
+      "semicolon": [true, "always"]
     }
 }

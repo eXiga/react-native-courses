@@ -1,27 +1,43 @@
-import React from "react"
-import { Image, Text, TextInput, TouchableOpacity, View } from "react-native"
-import styles from './Login.style'
+import React from "react";
+import { ActivityIndicator, Alert, Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
+import { ILoginService, LoginService } from '../../services/LoginService';
+import styles from './Login.style';
 
-export interface Props {
-  onLoginPressed: () => void
+interface ILoginState {
+  email: string;
+  password: string;
+  isLoading: boolean;
 }
 
-interface State {
-  email: string,
-  password: string
-}
+export class Login extends React.Component<NavigationScreenProps, ILoginState> {
+  static navigationOptions: NavigationScreenOptions = {
+    title: 'Login',
+    headerBackTitle: null
+  };
 
-export class Login extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
+  private loginService: ILoginService;
 
+  constructor(props: NavigationScreenProps) {
+    super(props);
+
+    this.loginService = new LoginService();
     this.state = {
       email: "",
       password: "",
-    }
+      isLoading: false
+    };
   }
 
   render() {
+    if (this.state.isLoading) {
+      return(
+        <View style = { styles.root }>
+          <ActivityIndicator/>
+        </View>
+      );
+    }
+
     return (
       <View style = { styles.root }>
         <Image 
@@ -38,6 +54,7 @@ export class Login extends React.Component<Props, State> {
           />
           <TextInput
             style = { styles.input }
+            secureTextEntry = { true }
             onChangeText = { (text) => this.setState({ password: text }) }
             placeholder = 'password'
             value = { this.state.password }
@@ -45,12 +62,35 @@ export class Login extends React.Component<Props, State> {
         </View>
         <TouchableOpacity
             style= { styles.button }
-            onPress = { this.props.onLoginPressed }
+            onPress = { () =>  this.login() }
             activeOpacity = { .5 }>
                 <Text style = { styles.buttonTitle  }>Login</Text> 
         </TouchableOpacity>
       </View>
-    )
+    );
+  }
+
+  private login() {
+    if (this.state.email === "") {
+      Alert.alert('Email is empty', 'You have to provide email!', [{text: 'OK'}]);
+      return;
+    }
+
+    if (this.state.password === "") {
+      Alert.alert('Password is empty', 'You have to provide password!', [{text: 'OK'}]);
+      return;
+    }
+
+    this.setState({ isLoading: true });
+    this.loginService
+      .login(this.state.email, this.state.password)
+      .then( response => {
+        this.setState({ isLoading: false });
+        if (response.ok) {
+          this.props.navigation.navigate('Products');
+        } else {
+          Alert.alert('Error', 'Please, check the data you provided', [{text: 'OK'}]);
+        }
+      }).catch(_ => Alert.alert('Error', 'Please, try again :(', [{text: 'OK'}]));
   }
 }
-

@@ -1,16 +1,18 @@
-import React from 'react'
-import { FlatList, Text, TouchableHighlight, View } from 'react-native'
-import { Product } from '../../models/Product'
-import { ProductRow } from './ProductRow'
-import styles from './Products.style'
+import React from 'react';
+import { BackHandler, FlatList, Text, TouchableHighlight, View } from 'react-native';
+import { NavigationEventSubscription, NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
+import { Product } from '../../models/Product';
+import { ProductRow } from './ProductRow';
+import styles from './Products.style';
 
-export interface Props {
-  onProductSelected: ((product: Product) => void)
-}
+const text = '  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eufugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia  deserunt mollit anim id est laborum.';
 
-const text = '  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eufugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia  deserunt mollit anim id est laborum.'
+export class Products extends React.Component<NavigationScreenProps, {}> {
+  static navigationOptions: NavigationScreenOptions = {
+    title: 'Products',
+    headerLeft: null
+  };
 
-export class Products extends React.Component<Props, {}> {
   products: Product[] = [
     new Product('Product 1', text, require('../../assets/img/audio.png')),
     new Product('Product 2', text, require('../../assets/img/bed.png')),
@@ -20,10 +22,33 @@ export class Products extends React.Component<Props, {}> {
     new Product('Product 6', text, require('../../assets/img/calendar.png')),
     new Product('Product 7', text, require('../../assets/img/camera.png')),
     new Product('Product 8', text, require('../../assets/img/cell_phone.png'))
-  ]
-  
-  constructor(props: Props) {
-    super(props)
+  ];
+
+  private didFocusSubscription?: NavigationEventSubscription;
+  private willBlurSubscription?: NavigationEventSubscription;
+
+  constructor(props: NavigationScreenProps) {
+    super(props);
+
+    this.didFocusSubscription = props.navigation.addListener('didFocus', _ => {
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
+    });
+  }
+
+  componentDidMount() {
+    this.willBlurSubscription = this.props.navigation.addListener('willBlur', _ => {
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.didFocusSubscription) {
+      this.didFocusSubscription.remove();
+    }
+
+    if (this.willBlurSubscription) {
+      this.willBlurSubscription.remove();
+    }
   }
 
   render() {
@@ -34,7 +59,7 @@ export class Products extends React.Component<Props, {}> {
         <FlatList
           data = { this.products }
           renderItem = { ({item}) =>
-            <TouchableHighlight onPress = { () => this.props.onProductSelected(item) } underlayColor = 'whitesmoke' >
+            <TouchableHighlight onPress = { () => this.props.navigation.navigate('Product', { item: item }) } underlayColor = 'whitesmoke' >
               <ProductRow productName = { item.name } imagePath = { item.imagePath } /> 
             </TouchableHighlight>
           }
@@ -42,6 +67,11 @@ export class Products extends React.Component<Props, {}> {
           ItemSeparatorComponent = { () => <View style = { styles.rowSeparator } /> }
         />
       </View>
-    )
+    );
+  }
+
+  private onBackButtonPressAndroid(): boolean {
+    BackHandler.exitApp();
+    return true;
   }
 }

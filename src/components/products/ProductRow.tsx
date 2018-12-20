@@ -1,15 +1,15 @@
-import React from 'react'
-import { Image, Text, View } from 'react-native'
-import styles from './ProductRow.style'
+import React from 'react';
+import { Image, Text, View } from 'react-native';
+import styles from './ProductRow.style';
 
-export interface RowProps {
-  productName: string,
-  imagePath: any
+export interface IProductRowProps {
+  productName: string;
+  imagePath: any;
 }
 
-export class ProductRow extends React.Component<RowProps, {}> {
-  constructor(props: RowProps) {
-    super(props)
+export class ProductRow extends React.Component<IProductRowProps, {}> {
+  constructor(props: IProductRowProps) {
+    super(props);
   }
 
   render() {
@@ -27,6 +27,6 @@ export class ProductRow extends React.Component<RowProps, {}> {
           source = { require('../../assets/img/right_arrow.png') }
         />
       </View>
-    )
+    );
   }
 }
