@@ -1,12 +1,14 @@
 class Product {
-  name: string
-  description: string
-  imagePath: any
+  id: number;
+  name: string;
+  description: string;
+  imagePath: any;
 
-  constructor(name: string, description: string, imagePath: any) {
-    this.name = name
-    this.description = description
-    this.imagePath = imagePath
+  constructor(id: number, name: string, description: string, imagePath: any) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.imagePath = imagePath;
   }
 }
 
