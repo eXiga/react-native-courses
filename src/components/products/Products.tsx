@@ -103,7 +103,7 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
           refreshing = { this.state.isRefreshing }
           onRefresh = { () => this.onRefresh() }
           onEndReached = { () => this.onEndReached() }
-          onEndReachedThreshold = { 0 }
+          onEndReachedThreshold = { 1 }
           data = { this.state.products }
           renderItem = { ({ item }) =>
             <TouchableHighlight 
