@@ -107,7 +107,7 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
           data = { this.state.products }
           renderItem = { ({ item }) =>
             <TouchableHighlight 
-              onPress = { () => this.props.navigation.navigate('Product', { item: item }) } 
+              onPress = { () => this.props.navigation.navigate('Product', { product: item }) } 
               underlayColor = 'whitesmoke' >
               <ProductRow productName = { item.name } imagePath = { item.imagePath } /> 
             </TouchableHighlight>
@@ -145,9 +145,12 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
     this.productsService.getProducts(this.state.productsPage, this.state.productsPageOffset)
       .then(response => response.json())
       .then(json => {
-        const products: Product[] = json.items.map(item => {
+        const items: Array<{id: number, name: string}> = json.items;
+        const products: Product[] = items.map(item => {
           const randomAsset = this.assets[Math.floor(Math.random() * this.assets.length)];
-          return new Product(item.id, item.name, text, randomAsset);
+          return new Product(item.id, item.name, text, randomAsset, 
+                             { latitude: 50.0646501, longitude: 19.9449799  },
+                             "48530670758");
         });
 
         this.setState({

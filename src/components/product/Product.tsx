@@ -5,13 +5,13 @@ import { Product as ProductModel } from '../../models/Product';
 import styles from './Product.style';
 
 interface IProductParams {
-  item: ProductModel;
+  product: ProductModel;
 }
 
 export class Product extends React.Component<NavigationScreenProps<IProductParams>, {}> { 
   static navigationOptions = ({navigation}: NavigationScreenProps<IProductParams>) => {
     return {
-      title: navigation.state.params ? navigation.state.params.item.name : 'Details'
+      title: navigation.state.params ? navigation.state.params.product.name : 'Details'
     };
   }
   
@@ -23,17 +23,25 @@ export class Product extends React.Component<NavigationScreenProps<IProductParam
         <View style = { styles.separator } />
         <View style = { styles.separator } />
         <View style = { styles.row }>
-          <Image style = { styles.image } source = { params!.item.imagePath } />
-          <Text style = { styles.title }>{`${params!.item.name }`}</Text>
+          <Image style = { styles.image } source = { params!.product.imagePath } />
+          <Text style = { styles.title }>{`${params!.product.name }`}</Text>
         </View>
         <View style = { styles.column }>
-          <Text style = { styles.description }>{`${params!.item.description}`}</Text>
-          <TouchableOpacity
+          <Text style = { styles.description }>{`${params!.product.description}`}</Text>
+          <View style = { styles.buttonsContainer }>
+            <TouchableOpacity
               style= { styles.button }
               onPress = { () => this.props.navigation.goBack() }
               activeOpacity = { .5 }>
                   <Text style = { styles.buttonTitle  }>All products</Text> 
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style= { styles.button }
+              onPress = { () => this.props.navigation.navigate('Map', { product: params!.product }) }
+              activeOpacity = { .5 }>
+                  <Text style = { styles.buttonTitle }>Show on map</Text> 
+            </TouchableOpacity>
+          </View>
         </View>
         <View style = { styles.separator } />
       </View>
