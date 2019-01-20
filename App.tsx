@@ -1,5 +1,6 @@
 import { createNavigationContainer, createStackNavigator } from 'react-navigation';
 import { Login } from './src/components/login/Login';
+import { Map } from './src/components/map/Map';
 import { Product } from './src/components/product/Product';
 import { Products } from './src/components/products/Products';
 
@@ -8,7 +9,8 @@ import { Products } from './src/components/products/Products';
 const rootStack = createStackNavigator({
   Login: Login,
   Products: Products,
-  Product: Product
+  Product: Product,
+  Map: Map
 }, {
   initialRouteName: "Login",
   defaultNavigationOptions: {

@@ -52,5 +52,10 @@ export default StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'vincHand',
     fontSize: 30
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'flex-start'
   }
 });

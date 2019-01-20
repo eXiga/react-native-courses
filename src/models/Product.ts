@@ -1,13 +1,24 @@
-class Product {
-  name: string
-  description: string
-  imagePath: any
+interface ICoordinate {
+  latitude: number;
+  longitude: number;
+}
 
-  constructor(name: string, description: string, imagePath: any) {
-    this.name = name
-    this.description = description
-    this.imagePath = imagePath
+class Product {
+  id: number;
+  name: string;
+  description: string;
+  imagePath: any;
+  location: ICoordinate;
+  phone: string;
+
+  constructor(id: number, name: string, description: string, imagePath: any, location: ICoordinate, phone: string) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.imagePath = imagePath;
+    this.location = location;
+    this.phone = phone;
   }
 }
 
-export { Product }
+export { Product };

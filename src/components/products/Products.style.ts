@@ -27,5 +27,10 @@ export default StyleSheet.create({
   rowSeparator: {
     height: 1,
     backgroundColor: 'gray',
+  },
+  footer: {
+    paddingVertical: 20,
+    borderTopWidth: 1,
+    borderColor: '#CED0CE'
   }
 });
