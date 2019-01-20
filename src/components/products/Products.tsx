@@ -132,7 +132,7 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
   }
 
   private onRefresh() {
-    this.setState({ isRefreshing: true }, () => this.fetchProducts());
+    this.setState({ isRefreshing: true, productsPageOffset: 1 }, () => this.fetchProducts());
   }
 
   private onEndReached() {
