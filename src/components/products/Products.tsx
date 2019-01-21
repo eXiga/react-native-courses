@@ -1,9 +1,10 @@
 import React from 'react';
-import { ActivityIndicator, BackHandler, FlatList, Text, TouchableHighlight, View } from 'react-native';
+import { BackHandler, FlatList, Text, TouchableHighlight, View } from 'react-native';
 import { NavigationEventSubscription, NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
 import { Product } from '../../models/Product';
 import { IProductsService, ProductsService } from '../../services/ProductsService';
 import { Error } from '../error/Error';
+import { Spinner } from '../spinner/Spinner';
 import { ProductRow } from './ProductRow';
 import styles from './Products.style';
 
@@ -126,7 +127,7 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
 
     return(
       <View style = { styles.footer }>
-        <ActivityIndicator animating size='large' />
+        <Spinner active = { true } />
       </View>
     );
   }

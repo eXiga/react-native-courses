@@ -1,6 +1,5 @@
 import React from "react";
 import { 
-  ActivityIndicator, 
   Animated,
   Easing, 
   Image, 
@@ -11,6 +10,7 @@ import {
 import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
 import { ILoginService, LoginService } from '../../services/LoginService';
 import { Error } from '../error/Error';
+import { Spinner } from '../spinner/Spinner';
 import styles from './Login.style';
 
 interface ILoginState {
@@ -53,7 +53,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
     if (this.state.isLoading) {
       return(
         <View style = { styles.root }>
-          <ActivityIndicator/>
+          <Spinner active = { true }/>
         </View>
       );
     }
