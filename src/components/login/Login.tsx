@@ -8,6 +8,7 @@ import {
   TouchableOpacity, 
   View } from "react-native";
 import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
+import { IKeychainService, KeychainService } from '../../services/KeychainService';
 import { ILoginService, LoginService } from '../../services/LoginService';
 import { Error } from '../error/Error';
 import { Spinner } from '../spinner/Spinner';
@@ -32,12 +33,14 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
   private shakeAnimation: Animated.Value;
 
   private loginService: ILoginService;
+  private keychainService: IKeychainService;
 
   constructor(props: NavigationScreenProps) {
     super(props);
     
     this.shakeAnimation = new Animated.Value(0);
     this.loginService = new LoginService();
+    this.keychainService = new KeychainService();
     this.state = {
       email: '',
       password: '',
@@ -47,6 +50,19 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
       errorDescription: '',
       isErrorRetriable: false
     };
+  }
+
+  componentDidMount() {
+    this.keychainService.getCredentials().then((credentials) => {
+      if (credentials.email == null || credentials.password == null) {
+        return;
+      }
+
+      this.setState({
+        email: credentials.email,
+        password: credentials.password
+      }, () => this.login());
+    });
   }
 
   render() {
@@ -152,7 +168,9 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
       .then( response => {
         this.setState({ isLoading: false });
         if (response.ok) {
-          this.props.navigation.navigate('Products');
+          this.keychainService
+            .save({email: this.state.email, password: this.state.password})
+            .then(() => { this.props.navigation.navigate('Products'); });
         } else {
           this.setState({
             shouldShowError: true,
