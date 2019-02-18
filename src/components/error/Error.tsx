@@ -1,6 +1,5 @@
 import React from "react";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
-import { IVibrationService, VibrationService } from '../../services/VibrationService';
 import styles from './Error.style';
 
 
@@ -14,16 +13,8 @@ export interface IErrorProps {
 }
 
 export class Error extends React.Component<IErrorProps, {}> {
-  private vibrationService: IVibrationService;
-
   constructor(props: IErrorProps) {
     super(props);
-
-    this.vibrationService = new VibrationService();
-  }
-
-  componentWillMount() {
-    this.vibrationService.vibrateError();
   }
 
   render() {

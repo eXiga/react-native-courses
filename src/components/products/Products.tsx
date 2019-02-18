@@ -3,7 +3,6 @@ import { BackHandler, FlatList, Text, TouchableHighlight, View } from 'react-nat
 import { NavigationEventSubscription, NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
 import { Product } from '../../models/Product';
 import { IProductsService, ProductsService } from '../../services/ProductsService';
-import { IReachabilityService, ReachabilityService } from '../../services/ReachabilityService';
 import { Error } from '../error/Error';
 import { Spinner } from '../spinner/Spinner';
 import { ProductRow } from './ProductRow';
@@ -44,14 +43,11 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
   private willBlurSubscription?: NavigationEventSubscription;
 
   private productsService: IProductsService;
-  private reachabilityService: IReachabilityService;
 
   constructor(props: NavigationScreenProps) {
     super(props);
 
     this.productsService = new ProductsService();
-    this.reachabilityService = new ReachabilityService();
-
     this.state = {
       isLoading: false,
       isRefreshing: false,
@@ -147,8 +143,7 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
   }
 
   private fetchProducts() {
-    this.reachabilityService.isConnected(() => {
-      this.productsService.getProducts(this.state.productsPage, this.state.productsPageOffset)
+    this.productsService.getProducts(this.state.productsPage, this.state.productsPageOffset)
       .then(response => response.json())
       .then(json => {
         const items: Array<{id: number, name: string}> = json.items;
@@ -175,16 +170,6 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
         errorDescription: 'Please, try again later :(',
         isErrorRetriable: true
       }));
-    }, () => {
-      this.setState({
-        isLoading: false,
-        isRefreshing: false,
-        shouldShowError: true,
-        errorTitle: 'Error',
-        errorDescription: 'No internet connection :(',
-        isErrorRetriable: true
-      });
-    });
   }
 
   private onBackButtonPressAndroid(): boolean {
