@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import { 
   Animated,
   Easing, 
@@ -6,14 +6,16 @@ import {
   Text, 
   TextInput, 
   TouchableOpacity, 
-  View } from "react-native";
-import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
+  View } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
+import { NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
 import { IKeychainService, KeychainService } from '../../services/KeychainService';
 import { ILoginService, LoginService } from '../../services/LoginService';
-import { IReachabilityService, ReachabilityService } from "../../services/ReachabilityService";
+import { IReachabilityService, ReachabilityService } from '../../services/ReachabilityService';
 import { Error } from '../error/Error';
 import { Spinner } from '../spinner/Spinner';
 import styles from './Login.style';
+
 
 interface ILoginState {
   email: string;
@@ -60,13 +62,17 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
   componentDidMount() {
     this.keychainService.getCredentials().then((credentials) => {
       if (credentials.email == null || credentials.password == null) {
+        SplashScreen.hide();
         return;
       }
 
       this.setState({
         email: credentials.email,
         password: credentials.password
-      }, () => this.login());
+      }, () => {
+        SplashScreen.hide();
+        this.login();
+      });
     });
   }
 
