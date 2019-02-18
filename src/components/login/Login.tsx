@@ -8,7 +8,9 @@ import {
   TouchableOpacity, 
   View } from "react-native";
 import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
+import { IKeychainService, KeychainService } from '../../services/KeychainService';
 import { ILoginService, LoginService } from '../../services/LoginService';
+import { IReachabilityService, ReachabilityService } from "../../services/ReachabilityService";
 import { Error } from '../error/Error';
 import { Spinner } from '../spinner/Spinner';
 import styles from './Login.style';
@@ -32,12 +34,18 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
   private shakeAnimation: Animated.Value;
 
   private loginService: ILoginService;
+  private keychainService: IKeychainService;
+  private reachabilityService: IReachabilityService;
 
   constructor(props: NavigationScreenProps) {
     super(props);
     
     this.shakeAnimation = new Animated.Value(0);
+    
     this.loginService = new LoginService();
+    this.keychainService = new KeychainService();
+    this.reachabilityService = new ReachabilityService();
+
     this.state = {
       email: '',
       password: '',
@@ -47,6 +55,19 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
       errorDescription: '',
       isErrorRetriable: false
     };
+  }
+
+  componentDidMount() {
+    this.keychainService.getCredentials().then((credentials) => {
+      if (credentials.email == null || credentials.password == null) {
+        return;
+      }
+
+      this.setState({
+        email: credentials.email,
+        password: credentials.password
+      }, () => this.login());
+    });
   }
 
   render() {
@@ -146,21 +167,24 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
       return;
     }
 
-    this.setState({ isLoading: true });
-    this.loginService
-      .login(this.state.email, this.state.password)
-      .then( response => {
-        this.setState({ isLoading: false });
-        if (response.ok) {
-          this.props.navigation.navigate('Products');
-        } else {
-          this.setState({
-            shouldShowError: true,
-            errorTitle: 'Error',
-            errorDescription: 'Please, check the data you provided',
-            isErrorRetriable: true
-          });
-        }
+    this.reachabilityService.isConnected(() => {
+      this.setState({ isLoading: true });
+      this.loginService
+        .login(this.state.email, this.state.password)
+        .then( response => {
+          this.setState({ isLoading: false });
+          if (response.ok) {
+            this.keychainService
+              .save({email: this.state.email, password: this.state.password})
+              .then(() => { this.props.navigation.navigate('Products'); });
+          } else {
+            this.setState({
+              shouldShowError: true,
+              errorTitle: 'Error',
+              errorDescription: 'Please, check the data you provided',
+              isErrorRetriable: true
+            });
+          }
       }).catch(_ => this.setState({
         isLoading: false,
         shouldShowError: true,
@@ -168,5 +192,14 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
         errorDescription: 'Please, try again later :(',
         isErrorRetriable: true
       }));
+    }, () => {
+      this.setState({
+        isLoading: false,
+        shouldShowError: true,
+        errorTitle: 'Error',
+        errorDescription: 'No internet connection :(',
+        isErrorRetriable: true
+      });
+    });
   }
 }
