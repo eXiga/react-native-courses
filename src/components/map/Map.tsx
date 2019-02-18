@@ -11,6 +11,7 @@ const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+const SHOW_INITIAL_POINT_DELAY = 5000;
 
 interface IMapParams {
   product: Product;
@@ -44,6 +45,14 @@ export class Map extends React.Component<NavigationScreenProps<IMapParams>, IMap
         longitudeDelta: LONGITUDE_DELTA
       }
     };
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      if (this.mapView) {
+        this.mapView.animateToRegion(this.state.initialRegion);
+      }
+    }, SHOW_INITIAL_POINT_DELAY);
   }
 
   render() {
