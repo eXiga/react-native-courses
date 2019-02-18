@@ -14,7 +14,7 @@ export default StyleSheet.create({
     bottom: 50,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'grey',
+    borderColor: 'gray',
     backgroundColor: '#F5FCFF'
   },
   buttonTitle: {
