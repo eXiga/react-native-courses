@@ -1,8 +1,16 @@
 import React from "react";
-import { ActivityIndicator, Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { 
+  Animated,
+  Easing, 
+  Image, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  View } from "react-native";
 import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
 import { ILoginService, LoginService } from '../../services/LoginService';
 import { Error } from '../error/Error';
+import { Spinner } from '../spinner/Spinner';
 import styles from './Login.style';
 
 interface ILoginState {
@@ -21,11 +29,14 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
     headerBackTitle: null
   };
 
+  private shakeAnimation: Animated.Value;
+
   private loginService: ILoginService;
 
   constructor(props: NavigationScreenProps) {
     super(props);
-
+    
+    this.shakeAnimation = new Animated.Value(0);
     this.loginService = new LoginService();
     this.state = {
       email: '',
@@ -42,7 +53,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
     if (this.state.isLoading) {
       return(
         <View style = { styles.root }>
-          <ActivityIndicator/>
+          <Spinner active = { true }/>
         </View>
       );
     }
@@ -65,7 +76,25 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
           source = { require('../../assets/img/logo.png') }
         />
         <Text style= { styles.title }>Friday's shop</Text>
-        <View style = { styles.inputs }>
+        { this.createInputForm() }
+        <TouchableOpacity
+            style= { styles.button }
+            onPress = { () =>  this.login() }
+            activeOpacity = { .5 }>
+                <Text style = { styles.buttonTitle  }>Login</Text> 
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  private createInputForm() {
+    const margins = this.shakeAnimation.interpolate({
+      inputRange: [0, 0.2, 0.4, 0.6, 0.8, 0.9, 1],
+      outputRange: [0, -30, 30, -30, 30, -30, 0]
+    });
+
+    return(
+      <Animated.View style = { [styles.inputs, { marginLeft: margins }] }>
           <TextInput
             style = { styles.input }
             onChangeText = { (text) => this.setState({ email: text }) }
@@ -79,34 +108,40 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
             placeholder = 'password'
             value = { this.state.password }
           />
-        </View>
-        <TouchableOpacity
-            style= { styles.button }
-            onPress = { () =>  this.login() }
-            activeOpacity = { .5 }>
-                <Text style = { styles.buttonTitle  }>Login</Text> 
-        </TouchableOpacity>
-      </View>
+        </Animated.View>
     );
+  }
+
+  private showInputError(callback: () => void) {
+    this.shakeAnimation.setValue(0);
+    Animated.timing(this.shakeAnimation, {
+      toValue: 1,
+      duration: 350,
+      easing: Easing.linear
+    }).start(() => callback());
   }
 
   private login() {
     if (this.state.email === "") {
-      this.setState({
-        shouldShowError: true, 
-        errorTitle: 'Email is empty!', 
-        errorDescription: 'You have to provide email!',
-        isErrorRetriable: false
+      this.showInputError(() => {
+        this.setState({
+          shouldShowError: true, 
+          errorTitle: 'Email is empty!', 
+          errorDescription: 'You have to provide email!',
+          isErrorRetriable: false
+        });
       });
       return;
     }
 
     if (this.state.password === "") {
-      this.setState({ 
-        shouldShowError: true, 
-        errorTitle: 'Password is empty!', 
-        errorDescription: 'You have to provide password!',
-        isErrorRetriable: false
+      this.showInputError(() => {
+        this.setState({ 
+          shouldShowError: true, 
+          errorTitle: 'Password is empty!', 
+          errorDescription: 'You have to provide password!',
+          isErrorRetriable: false
+        });
       });
       return;
     }
