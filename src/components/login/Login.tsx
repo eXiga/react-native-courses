@@ -1,3 +1,4 @@
+import LottieView from 'lottie-react-native';
 import React from 'react';
 import { 
   Animated,
@@ -98,9 +99,11 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
           }}
           visible = { this.state.shouldShowError }>
         </Error>      
-        <Image 
+        <LottieView
           style = { styles.image }
-          source = { require('../../assets/img/logo.png') }
+          source = { require('../../assets/animations/gift_animation.json') }
+          autoPlay
+          loop
         />
         <Text style= { styles.title }>Friday's shop</Text>
         { this.createInputForm() }
