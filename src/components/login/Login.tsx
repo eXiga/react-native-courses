@@ -6,16 +6,17 @@ import {
   Text, 
   TextInput, 
   TouchableOpacity, 
-  View } from 'react-native';
+  View } from 'react-native';  
 import DeviceInfo from 'react-native-device-info';
 import SplashScreen from 'react-native-splash-screen';
 import { NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
-import { IKeychainService, KeychainService } from '../../services/KeychainService';
 import { ILoginService, LoginService } from '../../services/LoginService';
 import { IReachabilityService, ReachabilityService } from '../../services/ReachabilityService';
+import { IUserDefaultsService, UserDefaultsService } from '../../services/UserDefaultsService';
 import { Error } from '../error/Error';
 import { Spinner } from '../spinner/Spinner';
 import styles from './Login.style';
+
 
 
 interface ILoginState {
@@ -37,7 +38,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
   private shakeAnimation: Animated.Value;
 
   private loginService: ILoginService;
-  private keychainService: IKeychainService;
+  private userDefaultsService: IUserDefaultsService;
   private reachabilityService: IReachabilityService;
 
   constructor(props: NavigationScreenProps) {
@@ -46,7 +47,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
     this.shakeAnimation = new Animated.Value(0);
     
     this.loginService = new LoginService();
-    this.keychainService = new KeychainService();
+    this.userDefaultsService = new UserDefaultsService();
     this.reachabilityService = new ReachabilityService();
 
     this.state = {
@@ -60,20 +61,19 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
     };
   }
 
-  componentDidMount() {
-    this.keychainService.getCredentials().then((credentials) => {
-      if (credentials.email == null || credentials.password == null) {
-        SplashScreen.hide();
-        return;
-      }
+  async componentDidMount() {
+    const credentials = await this.userDefaultsService.getCredentials();
+    if (credentials.email == null || credentials.password == null) {
+      SplashScreen.hide();
+      return;
+    }
 
-      this.setState({
-        email: credentials.email,
-        password: credentials.password
-      }, () => {
-        SplashScreen.hide();
-        this.login();
-      });
+    this.setState({
+      email: credentials.email,
+      password: credentials.password
+    }, () => {
+      SplashScreen.hide();
+      this.login();
     });
   }
 
@@ -176,31 +176,33 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
       return;
     }
 
-    this.reachabilityService.isConnected(() => {
+    this.reachabilityService.isConnected(async () => {
       this.setState({ isLoading: true });
-      this.loginService
-        .login(this.state.email, this.state.password)
-        .then( response => {
-          this.setState({ isLoading: false });
-          if (response.ok) {
-            this.keychainService
-              .save({email: this.state.email, password: this.state.password})
-              .then(() => { this.props.navigation.navigate('Products'); });
-          } else {
-            this.setState({
-              shouldShowError: true,
-              errorTitle: 'Error',
-              errorDescription: 'Please, check the data you provided',
-              isErrorRetriable: true
-            });
-          }
-      }).catch(_ => this.setState({
-        isLoading: false,
-        shouldShowError: true,
-        errorTitle: 'Error',
-        errorDescription: 'Please, try again later :(',
-        isErrorRetriable: true
-      }));
+      try {
+        const response = await this.loginService.login(this.state.email, this.state.password);
+        this.setState({ isLoading: false });
+        if (response.ok) {
+          const token = await response.json();
+          await this.userDefaultsService.saveToken({ value: token });
+          await this.userDefaultsService.saveCredentials({ email: this.state.email, password: this.state.password });
+          this.props.navigation.navigate('Products'); 
+        } else {
+          this.setState({
+            shouldShowError: true,
+            errorTitle: 'Error',
+            errorDescription: 'Please, check the data you provided',
+            isErrorRetriable: true
+          });
+        }
+      } catch (error) {
+        this.setState({
+          isLoading: false,
+          shouldShowError: true,
+          errorTitle: 'Error',
+          errorDescription: 'Please, try again later :(',
+          isErrorRetriable: true
+        });
+      }
     }, () => {
       this.setState({
         isLoading: false,
