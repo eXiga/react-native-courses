@@ -2,12 +2,12 @@ import LottieView from 'lottie-react-native';
 import React from 'react';
 import { 
   Animated,
-  Easing, 
-  Image, 
+  Easing,
   Text, 
   TextInput, 
   TouchableOpacity, 
   View } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import SplashScreen from 'react-native-splash-screen';
 import { NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
 import { IKeychainService, KeychainService } from '../../services/KeychainService';
@@ -105,7 +105,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
           autoPlay
           loop
         />
-        <Text style= { styles.title }>Friday's shop</Text>
+        <Text style= { styles.title }>{`${DeviceInfo.getBrand()}`} Friday's shop</Text>
         { this.createInputForm() }
         <TouchableOpacity
             style= { styles.button }
