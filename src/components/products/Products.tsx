@@ -141,9 +141,13 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
   }
 
   private onEndReached() {
-    this.setState({ 
-      isLoading: true, productsPageOffset: this.state.productsPageOffset + 1 
-    }, () => this.fetchProducts());
+    // https://github.com/facebook/react-native/issues/16067
+    // 1 year old issue, still w\o any fix. I'm just tired of warnings, so feature is disabled
+    // in this application.
+
+    // this.setState({ 
+    //   isLoading: true, productsPageOffset: this.state.productsPageOffset + 1 
+    // }, () => this.fetchProducts());
   }
 
   private fetchProducts() {
