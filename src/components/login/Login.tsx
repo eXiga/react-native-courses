@@ -10,6 +10,7 @@ import {
 import DeviceInfo from 'react-native-device-info';
 import SplashScreen from 'react-native-splash-screen';
 import { NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
+import { AnalyticsService, IAnalyticsService } from '../../services/AnalyticsService';
 import { ILoginService, LoginService } from '../../services/LoginService';
 import { IReachabilityService, ReachabilityService } from '../../services/ReachabilityService';
 import { IUserDefaultsService, UserDefaultsService } from '../../services/UserDefaultsService';
@@ -40,6 +41,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
   private loginService: ILoginService;
   private userDefaultsService: IUserDefaultsService;
   private reachabilityService: IReachabilityService;
+  private analyticsService: IAnalyticsService;
 
   constructor(props: NavigationScreenProps) {
     super(props);
@@ -49,6 +51,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
     this.loginService = new LoginService();
     this.userDefaultsService = new UserDefaultsService();
     this.reachabilityService = new ReachabilityService();
+    this.analyticsService = new AnalyticsService();
 
     this.state = {
       email: '',
@@ -72,6 +75,10 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
       email: credentials.email,
       password: credentials.password
     }, () => {
+      this.analyticsService.trackMessage(
+        'Login', 
+        `Keychain data was retrieved by: ${this.state.email}`
+      );
       SplashScreen.hide();
       this.login();
     });
@@ -152,6 +159,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
   }
 
   private login() {
+    this.analyticsService.trackMessage('Login', `Attempt to login with email: ${this.state.email}`);
     if (this.state.email === "") {
       this.showInputError(() => {
         this.setState({
@@ -182,11 +190,16 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
         const response = await this.loginService.login(this.state.email, this.state.password);
         this.setState({ isLoading: false });
         if (response.ok) {
+          this.analyticsService.trackMessage('Login', `Login is successful for: ${this.state.email}`);
           const token = await response.json();
           await this.userDefaultsService.saveToken({ value: token });
           await this.userDefaultsService.saveCredentials({ email: this.state.email, password: this.state.password });
           this.props.navigation.navigate('Products'); 
         } else {
+          this.analyticsService.trackError({ 
+            name: 'Login failed', 
+            message: 'Server respons is not OK' 
+          });
           this.setState({
             shouldShowError: true,
             errorTitle: 'Error',
@@ -195,6 +208,10 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
           });
         }
       } catch (error) {
+        this.analyticsService.trackError({ 
+          name: 'Login failed', 
+          message: 'Cant perform network request' 
+        });
         this.setState({
           isLoading: false,
           shouldShowError: true,
@@ -204,6 +221,10 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
         });
       }
     }, () => {
+      this.analyticsService.trackError({ 
+        name: 'Login failed', 
+        message: 'No internet connection' 
+      });
       this.setState({
         isLoading: false,
         shouldShowError: true,
