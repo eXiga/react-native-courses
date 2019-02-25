@@ -196,7 +196,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
           await this.userDefaultsService.saveCredentials({ email: this.state.email, password: this.state.password });
           this.props.navigation.navigate('Products'); 
         } else {
-          this.analyticsService.trackError({ 
+          this.analyticsService.trackError('Login', { 
             name: 'Login failed', 
             message: 'Server respons is not OK' 
           });
@@ -208,7 +208,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
           });
         }
       } catch (error) {
-        this.analyticsService.trackError({ 
+        this.analyticsService.trackError('Login', { 
           name: 'Login failed', 
           message: 'Cant perform network request' 
         });
@@ -221,7 +221,7 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
         });
       }
     }, () => {
-      this.analyticsService.trackError({ 
+      this.analyticsService.trackError('Login', { 
         name: 'Login failed', 
         message: 'No internet connection' 
       });

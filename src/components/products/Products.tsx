@@ -2,6 +2,7 @@ import React from 'react';
 import { BackHandler, FlatList, Text, TouchableHighlight, View } from 'react-native';
 import { NavigationEventSubscription, NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
 import { Product } from '../../models/Product';
+import { AnalyticsService, IAnalyticsService } from '../../services/AnalyticsService';
 import { IProductsService, ProductsService } from '../../services/ProductsService';
 import { IReachabilityService, ReachabilityService } from '../../services/ReachabilityService';
 import { Error } from '../error/Error';
@@ -45,12 +46,14 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
 
   private productsService: IProductsService;
   private reachabilityService: IReachabilityService;
+  private analyticsService: IAnalyticsService;
 
   constructor(props: NavigationScreenProps) {
     super(props);
 
     this.productsService = new ProductsService();
     this.reachabilityService = new ReachabilityService();
+    this.analyticsService = new AnalyticsService();
 
     this.state = {
       isLoading: false,
@@ -112,7 +115,10 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
           data = { this.state.products }
           renderItem = { ({ item }) =>
             <TouchableHighlight 
-              onPress = { () => this.props.navigation.navigate('Product', { product: item }) } 
+              onPress = { () => {
+                this.analyticsService.trackMessage('Products', `${item.name} was selected`);
+                this.props.navigation.navigate('Product', { product: item });
+              }} 
               underlayColor = 'whitesmoke' >
               <ProductRow productName = { item.name } imagePath = { item.imagePath } /> 
             </TouchableHighlight>
@@ -137,6 +143,7 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
   }
 
   private onRefresh() {
+    this.analyticsService.trackMessage('Products', 'Pull to refresh action was triggered!');
     this.setState({ isRefreshing: true, productsPageOffset: 1 }, () => this.fetchProducts());
   }
 
@@ -171,15 +178,25 @@ export class Products extends React.Component<NavigationScreenProps, IProductsSt
           isLoading: false
         });
       })
-      .catch(_ => this.setState({
-        isLoading: false,
-        isRefreshing: false,
-        shouldShowError: true,
-        errorTitle: 'Error',
-        errorDescription: 'Please, try again later :(',
-        isErrorRetriable: true
-      }));
+      .catch(_ => {
+        this.analyticsService.trackError('Products', { 
+          name: 'FetchProducts failed', 
+          message: 'Cant perform network request' 
+        });
+        this.setState({
+          isLoading: false,
+          isRefreshing: false,
+          shouldShowError: true,
+          errorTitle: 'Error',
+          errorDescription: 'Please, try again later :(',
+          isErrorRetriable: true
+        });
+      });
     }, () => {
+      this.analyticsService.trackError('Products', { 
+        name: 'FetchProducts failed', 
+        message: 'No internet connection' 
+      });
       this.setState({
         isLoading: false,
         isRefreshing: false,
