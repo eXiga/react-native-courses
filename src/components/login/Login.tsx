@@ -1,19 +1,22 @@
-import React from "react";
+import LottieView from 'lottie-react-native';
+import React from 'react';
 import { 
   Animated,
-  Easing, 
-  Image, 
+  Easing,
   Text, 
   TextInput, 
   TouchableOpacity, 
-  View } from "react-native";
-import { NavigationScreenOptions, NavigationScreenProps } from "react-navigation";
+  View } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import SplashScreen from 'react-native-splash-screen';
+import { NavigationScreenOptions, NavigationScreenProps } from 'react-navigation';
 import { IKeychainService, KeychainService } from '../../services/KeychainService';
 import { ILoginService, LoginService } from '../../services/LoginService';
-import { IReachabilityService, ReachabilityService } from "../../services/ReachabilityService";
+import { IReachabilityService, ReachabilityService } from '../../services/ReachabilityService';
 import { Error } from '../error/Error';
 import { Spinner } from '../spinner/Spinner';
 import styles from './Login.style';
+
 
 interface ILoginState {
   email: string;
@@ -60,13 +63,17 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
   componentDidMount() {
     this.keychainService.getCredentials().then((credentials) => {
       if (credentials.email == null || credentials.password == null) {
+        SplashScreen.hide();
         return;
       }
 
       this.setState({
         email: credentials.email,
         password: credentials.password
-      }, () => this.login());
+      }, () => {
+        SplashScreen.hide();
+        this.login();
+      });
     });
   }
 
@@ -92,11 +99,13 @@ export class Login extends React.Component<NavigationScreenProps, ILoginState> {
           }}
           visible = { this.state.shouldShowError }>
         </Error>      
-        <Image 
+        <LottieView
           style = { styles.image }
-          source = { require('../../assets/img/logo.png') }
+          source = { require('../../assets/animations/gift_animation.json') }
+          autoPlay
+          loop
         />
-        <Text style= { styles.title }>Friday's shop</Text>
+        <Text style= { styles.title }>{`${DeviceInfo.getBrand()}`} Friday's shop</Text>
         { this.createInputForm() }
         <TouchableOpacity
             style= { styles.button }
